@@ -1,0 +1,31 @@
+# permissions for end users to edit opensimulators.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: clusterrole
+    app.kubernetes.io/instance: opensimulator-editor-role
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/created-by: opensimulatoroperator
+    app.kubernetes.io/part-of: opensimulatoroperator
+    app.kubernetes.io/managed-by: kustomize
+  name: opensimulator-editor-role
+rules:
+- apiGroups:
+  - example.com
+  resources:
+  - opensimulators
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - example.com
+  resources:
+  - opensimulators/status
+  verbs:
+  - get

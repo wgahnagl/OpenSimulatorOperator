@@ -1,0 +1,14 @@
+apiVersion: example.com/v1
+kind: OpenSimulator
+metadata:
+  name: opensimulator-01
+spec:
+  name: jack
+
+---
+apiVersion: example.com/v1
+kind: OpenSimulator
+metadata:
+  name: opensimulator-02
+spec:
+  name: jack

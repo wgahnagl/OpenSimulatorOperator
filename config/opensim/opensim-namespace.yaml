@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: opensimulator
+  labels:
+    app: opensimulator
+  annotations:
+    openshift.io/description: A project for running open simulator on a cluster
+    openshift.io/display-name: OpenSimulator
+

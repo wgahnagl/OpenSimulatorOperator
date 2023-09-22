@@ -3,4 +3,5 @@ kind: Namespace
 metadata:
   name: openshift-windows-machine-config-operator 
   labels:
-    openshift.io/cluster-monitoring: "true" 
+    openshift.io/cluster-monitoring: "true"
+    pod-security.kubernetes.io/enforce: "privileged"

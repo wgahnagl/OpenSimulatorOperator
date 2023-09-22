@@ -4,7 +4,7 @@ metadata:
   name: windows-machine-config-operator
   namespace: openshift-windows-machine-config-operator
 spec:
-  channel: "stable" 
+  channel: "7.0.1" 
   installPlanApproval: "Automatic" 
   name: "windows-machine-config-operator"
   source: "redhat-operators" 

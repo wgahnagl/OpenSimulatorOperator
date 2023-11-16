@@ -32,7 +32,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 	//+kubebuilder:scaffold:imports
 
-  examplecomv1 "github.com/wgahnagl/OpenSimulatorOperator/api/v1"
+	examplecomv1 "github.com/wgahnagl/OpenSimulatorOperator/api/v1"
 )
 
 var (
@@ -66,8 +66,6 @@ func main() {
 
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
 		Scheme:                 scheme,
-		MetricsBindAddress:     metricsAddr,
-		Port:                   9443,
 		HealthProbeBindAddress: probeAddr,
 		LeaderElection:         enableLeaderElection,
 		LeaderElectionID:       "bdad5a3a.example.com",

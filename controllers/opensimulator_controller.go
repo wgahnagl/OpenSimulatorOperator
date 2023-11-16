@@ -19,7 +19,7 @@ package controllers
 import (
 	"context"
 
-	route "github.com/openshift/api/route/v1"
+	routev1 "github.com/openshift/api/route/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
@@ -92,8 +92,7 @@ func (r *OpenSimulatorReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 }
 
 func (r *OpenSimulatorReconciler) getOpenShiftRouteExternalIP(ctx context.Context, namespace, routeName string) (string, error) {
-	var route route.Route
-
+	var route routev1.Route
 	if err := r.Get(ctx, types.NamespacedName{Name: routeName, Namespace: namespace}, &route); err != nil {
 		return "", err
 	}

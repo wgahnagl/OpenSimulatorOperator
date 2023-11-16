@@ -3,13 +3,13 @@ module github.com/wgahnagl/OpenSimulatorOperator
 go 1.20
 
 require (
-	github.com/onsi/ginkgo/v2 v2.13.1
-	github.com/onsi/gomega v1.30.0
+	github.com/onsi/ginkgo/v2 v2.11.0
+	github.com/onsi/gomega v1.27.10
 	github.com/openshift/api v0.0.0-20231116140543-cee73515e337
-	k8s.io/api v0.28.4
-	k8s.io/apimachinery v0.28.4
-	k8s.io/client-go v0.28.4
-	sigs.k8s.io/controller-runtime v0.16.3
+	k8s.io/api v0.28.3
+	k8s.io/apimachinery v0.28.3
+	k8s.io/client-go v0.28.3
+	sigs.k8s.io/controller-runtime v0.16.1
 )
 
 require (

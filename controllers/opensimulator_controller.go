@@ -113,13 +113,13 @@ func (r *OpenSimulatorReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&examplecomv1.OpenSimulator{}).
 		Watches(
-			&source.Kind{Type: &corev1.Pod{}},
+			&corev1.Pod{},
 			handler.EnqueueRequestsFromMapFunc(r.mapPodsReqToOpenSimulatorReq),
 		).
 		Complete(r)
 }
 
-func (r *OpenSimulatorReconciler) mapPodsReqToOpenSimulatorReq(obj client.Object) []reconcile.Request {
+func (r *OpenSimulatorReconciler) mapPodsReqToOpenSimulatorReq(_ context.Context, obj client.Object) []reconcile.Request {
 	ctx := context.Background()
 	log := log.FromContext(ctx)
 

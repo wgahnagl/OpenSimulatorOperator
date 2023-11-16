@@ -19,8 +19,8 @@ package controllers
 import (
 	"context"
 
+	route "github.com/openshift/api/route/v1"
 	corev1 "k8s.io/api/core/v1"
-  route "github.com/openshift/api/route/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -29,7 +29,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 	"sigs.k8s.io/controller-runtime/pkg/source"
-
 
 	examplecomv1 "github.com/wgahnagl/OpenSimulatorOperator/api/v1"
 )
@@ -57,7 +56,7 @@ func (r *OpenSimulatorReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 
 	var podList corev1.PodList
 	var openSimPodStarted bool
-  if err := r.List(ctx, &podList); err != nil {
+	if err := r.List(ctx, &podList); err != nil {
 		log.Error(err, "unable to list pods :()")
 	} else {
 		for _, item := range podList.Items {
@@ -76,19 +75,24 @@ func (r *OpenSimulatorReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 	log.Info("OpenSimulator's status updated", "status", openSimPodStarted)
 	log.Info("OpenSimulator custom resource reconciled")
 
-  if ! OpenSimulator.Status.Configured {
-    // Load OpenSimulator config files
-    log.Info("loading OpenSimulator config files")
+	if !OpenSimulator.Status.Configured {
+		// Load OpenSimulator config files
+		log.Info("loading OpenSimulator config files")
 
-    OpenSimulator.Status.Configured = true 
-  }
-
+		externalIP, err := r.getOpenShiftRouteExternalIP(ctx, OpenSimulator.Namespace, "opensimulator")
+		if err != nil {
+			log.Error(err, "unable to retrieve external IP of the OpenShift Route")
+			log.Info("external IP: ", externalIP)
+			return ctrl.Result{}, err
+		}
+		OpenSimulator.Status.Configured = true
+	}
 
 	return ctrl.Result{}, nil
 }
 
 func (r *OpenSimulatorReconciler) getOpenShiftRouteExternalIP(ctx context.Context, namespace, routeName string) (string, error) {
-	var route v1.Route
+	var route route.Route
 
 	if err := r.Get(ctx, types.NamespacedName{Name: routeName, Namespace: namespace}, &route); err != nil {
 		return "", err
@@ -101,9 +105,9 @@ func (r *OpenSimulatorReconciler) getOpenShiftRouteExternalIP(ctx context.Contex
 		return externalIP, nil
 	}
 
-	return "", fmt.Errorf("no external IP found for the OpenShift Route")
+	log.Log.Error(nil, "no external IP found")
+	return "", nil
 }
-
 
 // SetupWithManager sets up the controller with the Manager.
 func (r *OpenSimulatorReconciler) SetupWithManager(mgr ctrl.Manager) error {

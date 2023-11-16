@@ -30,10 +30,9 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
-
-	examplecomv1 "github.com/wgahnagl/OpenSimulatorOperator/api/v1"
-	"github.com/wgahnagl/OpenSimulatorOperator/controllers"
 	//+kubebuilder:scaffold:imports
+
+  examplecomv1 "github.com/wgahnagl/OpenSimulatorOperator/api/v1"
 )
 
 var (

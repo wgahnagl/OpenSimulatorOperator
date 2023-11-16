@@ -33,6 +33,7 @@ import (
 	//+kubebuilder:scaffold:imports
 
 	examplecomv1 "github.com/wgahnagl/OpenSimulatorOperator/api/v1"
+	"github.com/wgahnagl/OpenSimulatorOperator/controllers"
 )
 
 var (

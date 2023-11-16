@@ -20,7 +20,7 @@ import (
 	"context"
 
 	routev1 "github.com/openshift/api/route/v1"
-	corev1 "k8s.io/api/core/v1"
+	core "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -53,7 +53,8 @@ func (r *OpenSimulatorReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
 
-	var podList corev1.PodList
+ 
+	var podList core.PodList
 	var openSimPodStarted bool
 	if err := r.List(ctx, &podList); err != nil {
 		log.Error(err, "unable to list pods :()")
@@ -78,7 +79,7 @@ func (r *OpenSimulatorReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 		// Load OpenSimulator config files
 		log.Info("loading OpenSimulator config files")
 
-		externalIP, err := r.getOpenShiftRouteExternalIP(ctx, OpenSimulator.Namespace, "opensimulator")
+		externalIP, err := r.getOpenShiftRouteExternalIP(ctx, req.NamespacedName, "opensimulator")
 		if err != nil {
 			log.Error(err, "unable to retrieve external IP of the OpenShift Route")
 			log.Info("external IP: ", externalIP)
@@ -90,11 +91,26 @@ func (r *OpenSimulatorReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 	return ctrl.Result{}, nil
 }
 
-func (r *OpenSimulatorReconciler) getOpenShiftRouteExternalIP(ctx context.Context, namespace, routeName string) (string, error) {
+func (r *OpenSimulatorReconciler) getOpenShiftRouteExternalIP(ctx context.Context, namespace types.NamespacedName, routeName string) (string, error) {
 	var route routev1.Route
-	if err := r.Get(ctx, types.NamespacedName{Name: routeName, Namespace: namespace}, &route); err != nil {
+	if err := r.Get(ctx, namespace, &route); err != nil {
 		return "", err
 	}
+ 
+  existingRoutes := &routev1.Route{}
+  err := r.Get(ctx, namespace, existingRoutes)
+  if err != nil {
+        // Route does not exist, create it
+        // newRoute := createRouteFromCR(yourCR)
+        // err := r.Create(ctx, newRoute)
+        
+        if err != nil {
+            // Handle creation error
+        }
+    } else if err != nil {
+        // Handle other errors
+    }
+  
 
 	// Assuming the Route has an Ingress with an external IP
 	if len(route.Status.Ingress) > 0 {
@@ -112,7 +128,7 @@ func (r *OpenSimulatorReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&examplecomv1.OpenSimulator{}).
 		Watches(
-			&corev1.Pod{},
+			&core.Pod{},
 			handler.EnqueueRequestsFromMapFunc(r.mapPodsReqToOpenSimulatorReq),
 		).
 		Complete(r)

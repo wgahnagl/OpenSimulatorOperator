@@ -20,16 +20,15 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// OpenSimulatorSpec defines the desired state of OpenSimulator
-type OpenSimulatorSpec struct {
+// OpenSimulatorNetworkSpec defines the desired state of OpenSimulatorNetwork
+type OpenSimulatorNetworkSpec struct {
 	Name string `json:"name"`
 }
 
-// OpenSimulatorStatus defines the observed state of OpenSimulator
-type OpenSimulatorStatus struct {
+// OpenSimulatorNetworkStatus defines the observed state of OpenSimulatorNetwork
+type OpenSimulatorNetworkStatus struct {
   Started    bool `json:"started,omitempty"`
-  NetworkConfigured bool `json:"networkconfigured,omitempty"`
-	Configured bool `json:"configured,omitempty"`
+	ExternalIp bool `json:"configured,omitempty"`
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 }
@@ -38,23 +37,22 @@ type OpenSimulatorStatus struct {
 //+kubebuilder:subresource:status
 
 // OpenSimulator is the Schema for the opensimulators API
-type OpenSimulator struct {
+type OpenSimulatorNetwork struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   OpenSimulatorSpec   `json:"spec,omitempty"`
-	Status OpenSimulatorStatus `json:"status,omitempty"`
+	Spec   OpenSimulatorNetworkSpec   `json:"spec,omitempty"`
+	Status OpenSimulatorNetworkStatus `json:"status,omitempty"`
 }
 
 //+kubebuilder:object:root=true
 
-// OpenSimulatorList contains a list of OpenSimulator
-type OpenSimulatorList struct {
+// OpenSimulatorList contains a list of OpenSimulatorNetwork 
+type OpenSimulatorNetworkList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []OpenSimulator `json:"items"`
+	Items           []OpenSimulatorNetwork `json:"items"`
 }
-
 func init() {
-	SchemeBuilder.Register(&OpenSimulator{}, &OpenSimulatorList{})
+	SchemeBuilder.Register(&OpenSimulatorNetwork{}, &OpenSimulatorNetworkList{})
 }

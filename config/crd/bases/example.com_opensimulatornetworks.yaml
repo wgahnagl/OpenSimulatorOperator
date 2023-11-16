@@ -5,14 +5,14 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.11.1
   creationTimestamp: null
-  name: opensimulators.example.com
+  name: opensimulatornetworks.example.com
 spec:
   group: example.com
   names:
-    kind: OpenSimulator
-    listKind: OpenSimulatorList
-    plural: opensimulators
-    singular: opensimulator
+    kind: OpenSimulatorNetwork
+    listKind: OpenSimulatorNetworkList
+    plural: opensimulatornetworks
+    singular: opensimulatornetwork
   scope: Namespaced
   versions:
   - name: v1
@@ -33,7 +33,7 @@ spec:
           metadata:
             type: object
           spec:
-            description: OpenSimulatorSpec defines the desired state of OpenSimulator
+            description: OpenSimulatorNetworkSpec defines the desired state of OpenSimulatorNetwork
             properties:
               name:
                 type: string
@@ -41,11 +41,10 @@ spec:
             - name
             type: object
           status:
-            description: OpenSimulatorStatus defines the observed state of OpenSimulator
+            description: OpenSimulatorNetworkStatus defines the observed state of
+              OpenSimulatorNetwork
             properties:
               configured:
-                type: boolean
-              networkconfigured:
                 type: boolean
               started:
                 type: boolean

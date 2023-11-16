@@ -20,6 +20,7 @@ import (
 	"context"
 
 	corev1 "k8s.io/api/core/v1"
+  route "github.com/openshift/api/route/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -28,6 +29,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 	"sigs.k8s.io/controller-runtime/pkg/source"
+
 
 	examplecomv1 "github.com/wgahnagl/OpenSimulatorOperator/api/v1"
 )
@@ -49,33 +51,59 @@ func (r *OpenSimulatorReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 
 	var OpenSimulator examplecomv1.OpenSimulator
 	if err := r.Get(ctx, req.NamespacedName, &OpenSimulator); err != nil {
-		log.Error(err, "unable to fetch Foo")
+		log.Error(err, "unable to fetch pods")
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
 
 	var podList corev1.PodList
-	var friendFound bool
-	if err := r.List(ctx, &podList); err != nil {
+	var openSimPodStarted bool
+  if err := r.List(ctx, &podList); err != nil {
 		log.Error(err, "unable to list pods :()")
 	} else {
 		for _, item := range podList.Items {
 			if item.GetName() == OpenSimulator.Spec.Name {
-				log.Info("pod linked to a foo custom resource found", "name", item.GetName())
-				friendFound = true
+				log.Info("pod linked to an OpenSimulator custom resource found", "name", item.GetName())
+				openSimPodStarted = true
 			}
 		}
 	}
 
-	OpenSimulator.Status.Happy = friendFound
+	OpenSimulator.Status.Started = openSimPodStarted
 	if err := r.Status().Update(ctx, &OpenSimulator); err != nil {
-		log.Error(err, "unable to update OpenSimulator's happy status", "status", friendFound)
+		log.Error(err, "unable to update OpenSimulator's started status", "status", openSimPodStarted)
 		return ctrl.Result{}, err
 	}
-	log.Info("OpenSimulator's happy status updated", "status", friendFound)
+	log.Info("OpenSimulator's status updated", "status", openSimPodStarted)
 	log.Info("OpenSimulator custom resource reconciled")
+
+  if ! OpenSimulator.Status.Configured {
+    // Load OpenSimulator config files
+    log.Info("loading OpenSimulator config files")
+
+    OpenSimulator.Status.Configured = true 
+  }
+
 
 	return ctrl.Result{}, nil
 }
+
+func (r *OpenSimulatorReconciler) getOpenShiftRouteExternalIP(ctx context.Context, namespace, routeName string) (string, error) {
+	var route v1.Route
+
+	if err := r.Get(ctx, types.NamespacedName{Name: routeName, Namespace: namespace}, &route); err != nil {
+		return "", err
+	}
+
+	// Assuming the Route has an Ingress with an external IP
+	if len(route.Status.Ingress) > 0 {
+		// Retrieve the first Ingress IP as the external IP
+		externalIP := route.Status.Ingress[0].Host
+		return externalIP, nil
+	}
+
+	return "", fmt.Errorf("no external IP found for the OpenShift Route")
+}
+
 
 // SetupWithManager sets up the controller with the Manager.
 func (r *OpenSimulatorReconciler) SetupWithManager(mgr ctrl.Manager) error {

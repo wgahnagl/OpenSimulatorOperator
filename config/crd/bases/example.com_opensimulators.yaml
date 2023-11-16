@@ -43,7 +43,7 @@ spec:
           status:
             description: OpenSimulatorStatus defines the observed state of OpenSimulator
             properties:
-              happy:
+              started:
                 type: boolean
             type: object
         type: object

@@ -1,0 +1,6 @@
+apiVersion: example.com/v1
+kind: OpenSimulatorRoute
+metadata:
+  name: opensimulator
+spec:
+  port: 80

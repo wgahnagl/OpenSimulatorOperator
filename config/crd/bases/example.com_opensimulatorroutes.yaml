@@ -5,20 +5,21 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.11.1
   creationTimestamp: null
-  name: opensimulators.example.com
+  name: opensimulatorroutes.example.com
 spec:
   group: example.com
   names:
-    kind: OpenSimulator
-    listKind: OpenSimulatorList
-    plural: opensimulators
-    singular: opensimulator
+    kind: OpenSimulatorRoute
+    listKind: OpenSimulatorRouteList
+    plural: opensimulatorroutes
+    singular: opensimulatorroute
   scope: Namespaced
   versions:
   - name: v1
     schema:
       openAPIV3Schema:
-        description: OpenSimulator is the Schema for the opensimulators API
+        description: OpenSimulatorRoute is the Schema for the opensimulatorroutes
+          API
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -33,25 +34,18 @@ spec:
           metadata:
             type: object
           spec:
-            description: OpenSimulatorSpec defines the desired state of OpenSimulator
+            description: OpenSimulatorRouteSpec defines the desired state of OpenSimulatorRoute
             properties:
-              name:
-                type: string
+              port:
+                format: int32
+                type: integer
             required:
-            - name
+            - port
             type: object
           status:
-            description: OpenSimulatorStatus defines the observed state of OpenSimulator
+            description: OpenSimulatorRouteStatus defines the observed state of OpenSimulatorRoute
             properties:
-              configured:
-                type: boolean
-              externalip:
-                type: string
-              networkconfigured:
-                type: boolean
-              routename:
-                type: string
-              started:
+              externalaccess:
                 type: boolean
             type: object
         type: object

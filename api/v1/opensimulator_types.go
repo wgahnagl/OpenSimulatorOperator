@@ -27,9 +27,11 @@ type OpenSimulatorSpec struct {
 
 // OpenSimulatorStatus defines the observed state of OpenSimulator
 type OpenSimulatorStatus struct {
-  Started    bool `json:"started,omitempty"`
-  NetworkConfigured bool `json:"networkconfigured,omitempty"`
-	Configured bool `json:"configured,omitempty"`
+	Started           bool   `json:"started,omitempty"`
+	NetworkConfigured bool   `json:"networkconfigured,omitempty"`
+	Configured        bool   `json:"configured,omitempty"`
+	RouteName         string `json:"routename,omitempty"`
+	ExternalIP        string `json:"externalip,omitempty"`
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 }

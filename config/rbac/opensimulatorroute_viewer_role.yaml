@@ -1,0 +1,20 @@
+# permissions for end users to view opensimulatorroutes.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: opensimulatorroute-viewer-role
+rules:
+- apiGroups:
+  - example.com
+  resources:
+  - opensimulatorroutes
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - example.com
+  resources:
+  - opensimulatorroutes/status
+  verbs:
+  - get

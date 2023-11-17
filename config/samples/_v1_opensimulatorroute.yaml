@@ -1,0 +1,6 @@
+apiVersion: example.com/v1
+kind: OpenSimulatorRoute
+metadata:
+  name: opensimulatorroute-sample
+spec:
+  # Add fields here

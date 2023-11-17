@@ -1,0 +1,6 @@
+apiVersion: example.com/v1
+kind: OpenSimulator
+metadata:
+  name: opensimulator
+spec:
+  name: oopensimulator

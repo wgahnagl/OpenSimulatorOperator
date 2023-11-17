@@ -19,7 +19,9 @@ package controllers
 import (
 	"context"
 
+	route "github.com/openshift/api/route/v1"
 	core "k8s.io/api/core/v1"
+	meta "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -53,25 +55,73 @@ func (r *OpenSimulatorReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 	}
 
 	var podList core.PodList
-	var openSimPodStarted bool
+
 	if err := r.List(ctx, &podList); err != nil {
 		log.Error(err, "unable to list pods :()")
 	} else {
 		for _, item := range podList.Items {
 			if item.GetName() == OpenSimulator.Spec.Name {
 				log.Info("pod linked to an OpenSimulator custom resource found", "name", item.GetName())
-				openSimPodStarted = true
+				OpenSimulator.Status.Started = true
+				if err := r.Status().Update(ctx, &OpenSimulator); err != nil {
+					log.Error(err, "unable to update OpenSimulator's started status")
+					return ctrl.Result{}, err
+				}
+				log.Info("OpenSimulator's status updated", "status")
 			}
 		}
 	}
 
-	OpenSimulator.Status.Started = openSimPodStarted
-	if err := r.Status().Update(ctx, &OpenSimulator); err != nil {
-		log.Error(err, "unable to update OpenSimulator's started status", "status", openSimPodStarted)
-		return ctrl.Result{}, err
+	if OpenSimulator.Status.Namespace == "" {
+		log.Info("Setting up OpenSimlator namespace")
+
+		err := r.Get(ctx, client.ObjectKey{Name: OpenSimulator.Spec.Namespace}, &core.Namespace{})
+		if err == nil {
+			log.Info("Desired namespace already exists")
+		} else {
+			namespace := &core.Namespace{
+				ObjectMeta: meta.ObjectMeta{
+					Name: OpenSimulator.Spec.Namespace,
+				},
+			}
+			if err := r.Create(ctx, namespace); err != nil {
+				return reconcile.Result{}, err
+			}
+		}
+		OpenSimulator.Status.Namespace = OpenSimulator.Spec.Namespace
 	}
-	log.Info("OpenSimulator's status updated", "status", openSimPodStarted)
-	log.Info("OpenSimulator custom resource reconciled")
+
+	if !OpenSimulator.Status.NetworkInfo.Configured {
+		log.Info("Setting up OpenSimlator route")
+
+		var openSimRoute route.Route
+		err := r.Get(ctx, client.ObjectKey{Name: OpenSimulator.Spec.Subdomain, Namespace: OpenSimulator.Spec.Namespace}, &openSimRoute)
+		if err == nil {
+			log.Info("Desired route already exists")
+		} else {
+			openSimRoute := &route.Route{
+				ObjectMeta: meta.ObjectMeta{
+					Name:      OpenSimulator.Spec.Subdomain,
+					Namespace: OpenSimulator.Spec.Namespace,
+				},
+				Spec: route.RouteSpec{
+					To: route.RouteTargetReference{
+						Kind: "Service",
+						Name: OpenSimulator.Spec.Subdomain,
+					},
+				},
+			}
+
+			if err := r.Create(ctx, openSimRoute); err != nil {
+				log.Error(err, "failed to create route")
+				return reconcile.Result{}, err
+			}
+		}
+		log.Info("Setting host")
+		OpenSimulator.Status.NetworkInfo.Host = openSimRoute.Status.Ingress[0].Host
+
+		OpenSimulator.Status.NetworkInfo.Configured = true
+	}
 
 	if !OpenSimulator.Status.Configured {
 		// Load OpenSimulator config files
@@ -82,6 +132,7 @@ func (r *OpenSimulatorReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 		OpenSimulator.Status.Configured = true
 	}
 
+	log.Info("OpenSimulator custom resource reconciled")
 	return ctrl.Result{}, nil
 }
 

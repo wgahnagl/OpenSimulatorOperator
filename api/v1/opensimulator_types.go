@@ -22,18 +22,27 @@ import (
 
 // OpenSimulatorSpec defines the desired state of OpenSimulator
 type OpenSimulatorSpec struct {
-	Name string `json:"name"`
+	Name      string `json:"name"`
+	Port      int32  `json:"port"`
+	Namespace string `json:"namespace"`
+	Subdomain string `json:"subdomain"`
 }
 
 // OpenSimulatorStatus defines the observed state of OpenSimulator
 type OpenSimulatorStatus struct {
-	Started           bool   `json:"started,omitempty"`
-	NetworkConfigured bool   `json:"networkconfigured,omitempty"`
-	Configured        bool   `json:"configured,omitempty"`
-	RouteName         string `json:"routename,omitempty"`
-	ExternalIP        string `json:"externalip,omitempty"`
+	Started     bool        `json:"started,omitempty"`
+	Configured  bool        `json:"configured,omitempty"`
+	Namespace   string      `json:"namespace,omitempty"`
+	NetworkInfo NetworkInfo `json:"networkinfo,omitempty"`
+
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
+}
+
+type NetworkInfo struct {
+	Configured bool   `json:"configured,omitempty"`
+	ExternalIP int32  `json:"externalip,omitempty"`
+	Host       string `json:"host,omitempty"`
 }
 
 //+kubebuilder:object:root=true

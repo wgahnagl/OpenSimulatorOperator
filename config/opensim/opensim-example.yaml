@@ -3,4 +3,7 @@ kind: OpenSimulator
 metadata:
   name: opensimulator
 spec:
-  name: oopensimulator
+  name: opensimulator
+  port: 80
+  namespace: opensimulator
+  subdomain: opensim

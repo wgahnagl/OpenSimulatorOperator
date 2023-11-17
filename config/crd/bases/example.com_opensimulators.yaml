@@ -37,20 +37,36 @@ spec:
             properties:
               name:
                 type: string
+              namespace:
+                type: string
+              port:
+                format: int32
+                type: integer
+              subdomain:
+                type: string
             required:
             - name
+            - namespace
+            - port
+            - subdomain
             type: object
           status:
             description: OpenSimulatorStatus defines the observed state of OpenSimulator
             properties:
               configured:
                 type: boolean
-              externalip:
+              namespace:
                 type: string
-              networkconfigured:
-                type: boolean
-              routename:
-                type: string
+              networkinfo:
+                properties:
+                  configured:
+                    type: boolean
+                  externalip:
+                    format: int32
+                    type: integer
+                  host:
+                    type: string
+                type: object
               started:
                 type: boolean
             type: object
